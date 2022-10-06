@@ -1,0 +1,12 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.5",
+        "guzzlehttp/promises": "^1.5"
+    },
+    "autoload": {
+        "files": [
+            "./common/constraint.php",
+            "./common/func.php"
+        ]
+    }
+}
