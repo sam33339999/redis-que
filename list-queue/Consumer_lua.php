@@ -4,9 +4,6 @@ $rdb = new \Redis();
 $rdb->connect('127.0.0.1', 6379);
 print_r('ping: ' . print_r($rdb->ping(), true) . PHP_EOL);
 
-$startFlag = false;
-$st = null;
-
 $luaScript =<<<LUA
     local foo = {}
     
@@ -23,19 +20,28 @@ LUA;
 //     return KEYS
 // LUA;
 
+$counter = 0; // 計數器
+$startFlag = false; // 開始 flag
+$st = null;
+
 while (true) {
+
+    if ($counter >= 10000) {
+        $spend = microtime(true) - $st;
+        print_r("spend ...: $spend\n");
+    }
 
     [, $val] = $rdb->blpop('LIST_QUEUE', 300);
     
     if ($val) {
-        $startFlag = true;
-        $st = microtime(true);
+        if (! $startFlag) {
+            $startFlag = true;
+            $st = microtime(true);
+        }
+        
         $result = $rdb->eval($luaScript, ['LIST_QUEUE', 10]);
         array_unshift($result, $val);
-        print_r($result);
-    }
 
-    
-    // print_r($val. PHP_EOL);
-    usleep(100);
+        $counter += count($result);
+    }
 }
