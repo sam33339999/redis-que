@@ -48,7 +48,7 @@ while (true) {
             $st = microtime(true);
         }
         
-        $result = $rdb->eval($luaScript, ['LIST_QUEUE', 9]);
+        $result = $rdb->eval($luaScript, ['LIST_QUEUE', REQ_BUF_NUMS - 1]);
         array_unshift($result, $val);
 
         foreach ($result as $s) {

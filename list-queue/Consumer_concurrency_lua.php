@@ -41,7 +41,7 @@ while (true) {
     }
 
     // 如果達到併發緩存量、或是隊列內已經無需要 push 的東西，我就去打 api
-    if (count($con) == CONCURRENCY_NUMS || $rdb->llen(QUEUE_NAME) == 0) {
+    if (count($con) == REQ_BUF_NUMS || $rdb->llen(QUEUE_NAME) == 0) {
 
         $pool = new GuzzleHttp\Pool($httpCli, generateReqs($con), [
             'concurrency' => CONCURRENCY_NUMS,
@@ -69,7 +69,7 @@ while (true) {
             $startFlag = true;
             $st = microtime(true);
         }
-        $result = $rdb->eval($luaScript, ['LIST_QUEUE', 9]);
+        $result = $rdb->eval($luaScript, ['LIST_QUEUE', REQ_BUF_NUMS - 1]);
         array_unshift($result, $val);
         $con = $result;
         // print_r($con);
